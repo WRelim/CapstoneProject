@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>
+		Inventory Website
+	</title>
+	<style>
+		body {
+			margin: 4rem;
+		}
+
+		#formContainer {
+			margin-bottom: 20px;
+		}
+
+		label {
+			display: block;
+			margin-top: 10px;
+		}
+
+		input,
+		textarea {
+			width: 300px;
+			padding: 8px;
+			margin-top: 5px;
+			border: 1px solid #ccc;
+			border-radius: 4px;
+		}
+
+		button {
+			margin: 10px;
+			padding: 8px 16px;
+			background-color: #fc4a18;
+			color: #fff;
+			border: none;
+			border-radius: 4px;
+			cursor: pointer;
+		}
+
+		button:hover {
+			background-color: #fc4a18;
+		}
+
+		table {
+			border-collapse: collapse;
+			margin-bottom: 20px;
+			width: 100%;
+		}
+
+		th,
+		td {
+			border: 1px solid #ddd;
+			padding: 8px;
+			text-align: left;
+		}
+
+		th {
+			background-color: #fc4a18;
+			color: #fff;
+		}
+	</style>
+</head>
+
+<body>
+	<h1 style="color: #FB3602;">
+    <img id="main__img" height="50px" src="images/pic1.png" />
+    Inventory
+	</h1>
+	<h2>Soda Nerd Stock Management</h2>
+    <!-- QR Scanner -->
+    <script src="./qrScript.js"></script>
+    <div style="text-align: center;">
+
+        <div id="reader" style="width: 400px;"></div>
+        <div id="show" style="display: none;">
+            <h4>Added</h4>
+            <p style="color: #FB3602;" id="result"></p>
+        </div>
+    </div>
+	<div id="formContainer">
+		<button onclick="addData()">
+			Add 
+		</button> 
+        <button onclick="removeData()">
+			Remove
+		</button>
+	</div>
+	<table id="outputTable">
+		<tr>
+			<th>Name</th>
+			<th>Stock</th>
+			<th>Actions</th>
+		</tr>
+	</table>
+	<script>
+		function addData() {
+      const html5Qrcode = new Html5Qrcode('reader');
+        const qrCodeSuccessCallback = (decodedText, decodedResult)=>{
+            if(decodedText){
+                document.getElementById('show').style.display = 'block';
+                document.getElementById('result').textContent = decodedText;
+				
+
+                let name = decodedText;
+                let table = document.getElementById("outputTable");
+                let newRow = table.insertRow(table.rows.length);
+                
+                newRow.insertCell(0).innerHTML = name;
+                newRow.insertCell(1).innerHTML = 1;
+                newRow.insertCell(2).innerHTML =
+                    '<button onclick="editData(this)">Edit</button>'+
+                    '<button onclick="deleteData(this)">Delete</button>';
+                
+				html5Qrcode.stop();
+                clearInputs();
+                setTimeout(() => "", 3000);
+            }
+        }
+        const config = {fps:10, qrbox:{width:250, height:250}};
+        html5Qrcode.start({facingMode:"environment"}, config,qrCodeSuccessCallback);
+		}
+
+		function editData(button) {
+			let row = button.parentNode.parentNode;
+			let nameCell = row.cells[0];
+			let stockCell = row.cells[1];
+			let nameInput = prompt("Enter the updated stock:", nameCell.innerHTML);
+			let stockInput = prompt("Enter the updated stock:", stockCell.innerHTML);
+			
+			nameCell.innerHTML = nameInput;
+			stockCell.innerHTML = stockInput;
+		}
+
+		function deleteData(button) {
+			let row = button.parentNode.parentNode;
+			row.parentNode.removeChild(row);
+		}
+
+		function clearInputs() {
+			// Clear input fields 
+			document.getElementById("nameInput").value = "";
+			document.getElementById("stockInput").value = "";
+		}
+	</script>
+</body>
+
+</html>
